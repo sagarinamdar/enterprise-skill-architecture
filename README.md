@@ -4,6 +4,7 @@
 
 [![Language: C++17](https://img.shields.io/badge/Language-C%2B%2B17-blue.svg)](https://isocpp.org/)
 [![Sanitizers: ASAN/UBSAN](https://img.shields.io/badge/Sanitizers-ASAN%2FUBSAN-green.svg)](https://github.com/google/sanitizers)
+[![CI Verification](https://github.com/sagarinamdar/enterprise-skill-architecture/actions/workflows/verify.yml/badge.svg)](https://github.com/sagarinamdar/enterprise-skill-architecture/actions/workflows/verify.yml)
 [![Architecture: 3-File Skill](https://img.shields.io/badge/Architecture-3--File%20Skill-orange.svg)](#core-architecture-the-3-file-separation)
 [![Verified on Google Antigravity](https://img.shields.io/badge/Verified-Google%20Antigravity-4285F4.svg)](#)
 
@@ -25,7 +26,7 @@ This architecture was forged through the real-world experiences of a systems arc
 
 * **The "Million-Dollar Asset" Fallacy**: Teams revere legacy codebases because they cost millions in human coordination. But feeding raw legacy code to an AI doesn't transfer that wisdom—the model cannot distinguish business rules from 15-year-old memory hacks. It simply industrializes technical debt.
 * **The Frozen Model vs. Amnesiac Enterprise**: Foundation models arrive with frozen weights and zero awareness of internal architecture. Fine-tuning on legacy code is an expensive trap that bakes bad C++98 into parameters forever. Skills serve as an externalized, dynamic memory bank that enforces modern standards at runtime without touching model weights.
-* **The Enterprise IP Citadel (Zero Data Handover)**: CISOs and legal teams will not upload proprietary codebases to external cloud AI. The Skill architecture runs all builds, static analysis, and AddressSanitizer checks **100% locally within your security perimeter**, using deterministic scripts so zero proprietary source leaves the firewall.
+* **The Enterprise IP Citadel (Data Sovereignty)**: CISOs and legal teams will not upload entire proprietary codebases to external cloud AI. The Skill architecture runs all builds, static analysis, and AddressSanitizer checks **100% locally within your security perimeter**, eliminating bulk cloud RAG indexing and restricting model context to minimal policies and scoped diffs (compatible with local/VPC models for zero egress).
 * **The Developer Prompting Ceiling**: No developer will write a 2,000-word prompt detailing 20 years of architecture rules for a 20-line bug fix. When developers give realistic, concise prompts, unguided models default to naive pattern matching. The Skill architecture attaches persistent policies automatically.
 * **The "Groundhog Day" of Unpersisted Corrections**: When an engineer spends an hour steering an AI through a complex memory fix, that learning is lost the second the chat closes. Tomorrow, the model makes the exact same mistake. Codifying fixes into `skills/pattern-catalog.md` turns individual fixes into permanent repository memory.
 * **Finite Context & Attention Dilution**: Dumping massive repos into 1M-token windows causes attention rot; key safety constraints get lost in boilerplate. Progressive disclosure keeps working context lean (~500 tokens), querying catalogs on demand and offloading build logs entirely to local scripts.
