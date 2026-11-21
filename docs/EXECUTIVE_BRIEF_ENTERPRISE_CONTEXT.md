@@ -176,13 +176,13 @@ To convert enterprise AI from an expensive parlor trick into an indispensable mu
 To ensure defensibility before executive leadership, every claim is explicitly paired with its tested result and operational caveat:
 
 1. **Claim: Zero Command Hallucination**  
-   *Result:* Eliminated 100% of invalid CLI compiler/sanitizer flags by delegating execution to local scripts (`verify.sh`).  
+   *Result:* Eliminated 100% of invalid CLI compiler/sanitizer flags (which occurred in 3/5 baseline runs) by delegating execution to local scripts (`verify.sh`).  
    *Caveat:* Requires a functioning host/container build toolchain (CMake, Clang/GCC/MSVC). Does not repair fundamentally broken build systems.
 2. **Claim: Eradication of Legacy Memory Anti-Patterns**  
    *Result:* Replaced raw owning allocations (`new`, `delete`, `delete this;`) with `ScopedConnection` RAII tokens across all test runs.  
    *Caveat:* Invariant policies must be defined and maintained; the framework does not synthesize architectural rules without human policy specification.
 3. **Claim: Elimination of Cross-Session Learning Loss**  
-   *Result:* Reduced debugging convergence from 4.2 turns to 1.4 turns by externalizing failure memory into `pattern-catalog.md`.  
+   *Result:* Reduced debugging convergence from a mean of 4.2 turns to 1.4 turns by externalizing failure memory into `pattern-catalog.md`.  
    *Caveat:* Requires human architectural review to approve and seed the canonical remediation pattern the first time an issue is encountered.
 4. **Claim: Machine-Verified Memory Safety**  
    *Result:* 0 AddressSanitizer violations across all treatment runs versus 4/5 runs failing with heap-use-after-free in the unguided baseline.  
@@ -191,7 +191,7 @@ To ensure defensibility before executive leadership, every claim is explicitly p
    *Result:* Kept working context windows constrained to ~500 tokens using Progressive Disclosure, avoiding attention dilution.  
    *Caveat:* Large-scale multi-module refactorings spanning dozens of unlinked subsystems still require structured architectural chunking.
 6. **Claim: Zero-Data-Egress Enterprise Security**  
-   *Result:* 0 bytes of proprietary source code leave the local security perimeter; the external model acts strictly as an orchestrator.  
+   *Result:* All builds, static analysis, and ASAN runs execute 100% locally—eliminating bulk cloud RAG indexing and restricting model context to minimal ~500-token policies and scoped diffs (compatible with VPC/local models for zero egress).  
    *Caveat:* Requires local developer machines or self-hosted CI runners with sufficient compute capacity to execute native compilation.
 
 ---

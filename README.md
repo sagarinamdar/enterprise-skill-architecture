@@ -135,12 +135,12 @@ To ensure absolute technical credibility, every claim made by this project is an
 
 | # | Grounded Claim | Known Industry Problem | Our Engineering Effort | Verified Result | Explicit Caveat / Limitation |
 |---|---|---|---|---|---|
-| **1** | **Elimination of Command Hallucination** | LLMs guess compiler/sanitizer flags (`-fsanitize=address`, include paths, link libraries) and fail in 60%+ of multi-file runs. | Bundled deterministic verification hooks (`scripts/verify.sh`, `scripts/verify.ps1`, `scripts/verify.py`) directly inside the Skill. | **0 CLI command errors** across all treatment iterations. The agent invokes scripts instead of improvising CLI syntax. | Requires a working host build toolchain (CMake + Clang/GCC/MSVC or Python 3). Does not fix broken underlying build environments. |
+| **1** | **Elimination of Command Hallucination** | LLMs guess compiler/sanitizer flags and failed in 3/5 (60%) of baseline runs in our fixture. | Bundled deterministic verification hooks (`scripts/verify.sh`, `scripts/verify.ps1`, `scripts/verify.py`) directly inside the Skill. | **0 CLI command errors** across all treatment iterations. The agent invokes scripts instead of improvising CLI syntax. | Requires a working host build toolchain (CMake + Clang/GCC/MSVC or Python 3). Does not fix broken underlying build environments. |
 | **2** | **Prevention of Context Poisoning** | In-context learning causes models to statistically mimic raw pointers (`new`, `delete`, `delete this;`) found in brownfield repositories. | Formulated non-negotiable policy (`instructions.md`) and enforced the Dual-Pass Diff Gate (Grounded vs. Ungrounded audit). | **100% elimination of raw owning allocations**; introduced `ScopedConnection` RAII tokens in all 5 evaluation runs. | The policy layer must be explicitly defined and maintained; the framework does not synthesize architectural rules without human policy specification. |
-| **3** | **Eradication of Session Memory Amnesia ("Groundhog Day")** | Foundation models have frozen parametric memory; debugging a memory leak in one chat session does not prevent the model from repeating the same bug tomorrow. | Codified diagnosed failure signatures and verified modern C++ solutions into a version-controlled Failure Memory Bank (`pattern-catalog.md`). | Reduced median turns-to-fix from **4.2 turns to 1.4 turns** on recurring lifecycle and observer failure signatures. | Requires human-in-the-loop review to validate and seed the canonical modern solution into the catalog the first time a bug is solved. |
+| **3** | **Eradication of Session Memory Amnesia ("Groundhog Day")** | Foundation models have frozen parametric memory; debugging a memory leak in one chat session does not prevent the model from repeating the same bug tomorrow. | Codified diagnosed failure signatures and verified modern C++ solutions into a version-controlled Failure Memory Bank (`pattern-catalog.md`). | Reduced mean turns-to-fix from **4.2 turns to 1.4 turns** on recurring lifecycle and observer failure signatures. | Requires human-in-the-loop review to validate and seed the canonical modern solution into the catalog the first time a bug is solved. |
 | **4** | **Deterministic Memory Safety Verification** | LLMs hallucinate code correctness and cannot evaluate dynamic runtime memory safety, claiming buggy code is "clean." | Integrated automated AddressSanitizer (`-fsanitize=address`) and LeakSanitizer runtime gates into CTest scripts. | **0 AddressSanitizer errors** across all treatment runs vs. 4/5 runs failing with heap-use-after-free in the unguided baseline. | Sanitizers only detect memory corruption in code paths actively exercised by tests. Test suite execution coverage remains a prerequisite. |
 | **5** | **Mitigation of Attention Dilution & Context Rot** | Dumping large repositories into 1M+ token windows causes attention degradation ("lost in the middle") and 5x latency/cost spikes. | Implemented Progressive Disclosure: working prompt context is constrained to ~500 tokens, loading pattern catalog entries only on-demand. | Prevents prompt bloat, maintains razor-sharp instruction adherence, and lowers per-turn inference costs. | Complex multi-subsystem refactorings spanning dozens of unlinked modules still require structured architectural chunking. |
-| **6** | **Zero-Data-Egress Enterprise Security** | Enterprise CISOs and legal boundaries block uploading proprietary repositories to external cloud AI services. | Built local-sandbox execution where all compilation, static analysis, and sanitizers run inside the enterprise firewall. | **0 bytes of raw proprietary source code leave the local security perimeter**; the model acts purely as an orchestrator. | Requires local developer machines or self-hosted CI runners with sufficient CPU/memory to execute native compilation. |
+| **6** | **Zero-Data-Egress Enterprise Security** | Enterprise CISOs and legal boundaries block uploading proprietary repositories to external cloud AI services. | Built local-sandbox execution where all compilation, static analysis, and sanitizers run inside the enterprise firewall. | All builds, static analysis, and ASAN runs execute 100% locally—eliminating bulk cloud RAG indexing and restricting model context to minimal ~500-token policies and scoped diffs (compatible with VPC/local models for zero egress). | Requires local developer machines or self-hosted CI runners with sufficient CPU/memory to execute native compilation. |
 
 ---
 
@@ -207,7 +207,7 @@ AddressSanitizer: 0 errors detected.
 
 ---
 
-## 8. Machine-Verified A/B Benchmark Results
+## 9. Machine-Verified A/B Benchmark Results
 
 Across 5 repeated test iterations comparing standard prompting against the 3-File Skill framework:
 
@@ -217,21 +217,21 @@ Across 5 repeated test iterations comparing standard prompting against the 3-Fil
 | **AddressSanitizer Errors** | 4 (heap-use-after-free / leak) | **0** |
 | **Command Hallucination Errors** | 3 (invalid compiler/linker flags) | **0 (Offloaded to script)** |
 | **Introduced RAII Patterns** | No (duplicated manual `delete`) | **Yes (`ScopedConnection`)** |
-| **Median Turns to Green CI** | 4.2 turns | **1.4 turns** |
+| **Mean Turns to Green CI** | 4.2 turns | **1.4 turns** |
 
 *Complete raw data and log traces are available in [`benchmarks/results.md`](benchmarks/results.md).*
 
 ---
 
-## 9. References & Citations
+## 10. References & Citations
 
 1. **GitClear (2026)**: *The AI Code Quality & Maintainability Gap: Code Duplication, Churn, and the Decline of Refactoring*. [gitclear.com/research](https://www.gitclear.com/the_ai_code_quality_maintainability_gap)
 2. **Thoughtworks (2026)**: *Context Rot and Context Poisoning in Autonomous Agent Workflows*. [thoughtworks.com/insights](https://www.thoughtworks.com/insights/blog/generative-ai/what-is-context-rot)
 3. **Google Cloud (2026)**: *What are Agent Skills? Architecture and Script Bundling*. [cloud.google.com/discover/ai-agent-skills](https://cloud.google.com/discover/ai-agent-skills)
 4. **Google Cloud Gemini Platform (2026)**: *Context Caching Architecture, KV Re-use, and Pricing*. [docs.cloud.google.com/gemini-enterprise-agent-platform](https://docs.cloud.google.com/gemini-enterprise-agent-platform/models/context-cache/context-cache-overview)
-5. **Knowledge Conflicts from Evolving APIs in Large Language Models (2026)**: *Empirical analysis of context overrides across 11 frontier LLM architectures*. [arXiv:2604.09515](https://arxiv.org/html/2604.09515v1)
+5. **Ashik et al. (2026)**: *When LLMs Lag Behind: Knowledge Conflicts from Evolving APIs in Code Generation*. [arXiv:2604.09515](https://arxiv.org/html/2604.09515v1)
 
 ---
 
-## 10. License
+## 11. License
 MIT License. Free to use, adapt, and build upon for enterprise and academic research.

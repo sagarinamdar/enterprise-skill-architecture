@@ -1,0 +1,16 @@
+﻿name: Verification
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Static Check
+        run: python scripts/verify.py
+      - name: Toolchain Setup
+        run: sudo apt-get update && sudo apt-get install -y cmake clang libasan8 ninja-build
+      - name: Dynamic Check
+        run: bash scripts/verify.sh

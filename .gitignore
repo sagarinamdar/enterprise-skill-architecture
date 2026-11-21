@@ -11,3 +11,4 @@ compile_commands.json
 .vscode/
 .idea/
 *.log
+*.code-workspace

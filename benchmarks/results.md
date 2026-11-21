@@ -24,7 +24,7 @@ This benchmark evaluates the effectiveness of the **3-File Skill Architecture + 
 | **AddressSanitizer (ASAN) Violations** | 4 / 5 runs (Heap-use-after-free / leaks) | **0 violations across all 5 runs** | **100% Sanitizer Clean** |
 | **Command Hallucination Incidents** | 3 (Attempted non-existent cmake flags or invalid g++ strings) | **0 (Offloaded to deterministic script)** | **Zero CLI Hallucination** |
 | **Introduced RAII Lifecycle Patterns** | 0 / 5 (Replicated `delete` and raw pointers) | **5 / 5 (Scoped guards and smart pointers)** | **Zero Context Poisoning** |
-| **Median Turns to Green CI** | 4.2 turns | **1.4 turns** | **3x Faster Convergence** |
+| **Mean Turns to Green CI** | 4.2 turns | **1.4 turns** | **3x Faster Convergence** |
 
 ---
 
