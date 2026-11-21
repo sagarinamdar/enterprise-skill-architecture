@@ -34,6 +34,9 @@ This architecture was forged through the real-world experiences of a systems arc
 
 ---
 
+## 3. The 3-File Skill Architecture
+
+```mermaid
 flowchart TB
     Root["<b>3-File Skill Separation</b>"]
 
@@ -54,8 +57,9 @@ flowchart TB
 
     Root --> P1
     Root --> P2
-    Root --> P3\
-  ```
+    Root --> P3
+```
+
 1. **Policy (`skills/instructions.md`)**  
    *What is non-negotiable.* Immutable rules of engagement: C++17 standard conformance, strict RAII lifecycle management, zero heap-use-after-free, and automated zero-tolerance ASAN exits.
 2. **Execution Playbook (`skills/skill.md`)**  
@@ -65,6 +69,9 @@ flowchart TB
 
 ---
 
+## 4. Deterministic Script Hook Principle
+
+```mermaid
 flowchart TB
     A["<b>Agent Skill Workflow</b><br/>(skills/skill.md)"] -->|"Triggers deterministic hook"| B["<b>./scripts/verify.sh</b><br/>(Zero LLM-guessed flags)"]
 
@@ -74,6 +81,8 @@ flowchart TB
     C --> E["<b>Machine-Checked Verdict</b><br/>(Exit Code: 0 opinion, 100% truth)"]
     D --> E
 ```
+
+The LLM never generates or executes raw compilation strings—it triggers `./scripts/verify.sh` and consumes structured, deterministic compiler/sanitizer exit codes.
 
 The LLM never generates or executes raw compilation strings—it triggers `./scripts/verify.sh` and consumes structured, deterministic compiler/sanitizer exit codes.
 
