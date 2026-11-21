@@ -83,9 +83,6 @@ flowchart TB
 ```
 
 The LLM never generates or executes raw compilation strings—it triggers `./scripts/verify.sh` and consumes structured, deterministic compiler/sanitizer exit codes.
-
-The LLM never generates or executes raw compilation strings—it triggers `./scripts/verify.sh` and consumes structured, deterministic compiler/sanitizer exit codes.
-
 ---
 
 ## 5. Dual-Pass Context Audit (Grounded vs. Ungrounded)
@@ -211,4 +208,4 @@ Across 5 repeated test iterations comparing standard prompting against the 3-Fil
 
 ## 12. License
 MIT License. Free to use, adapt, and build upon for enterprise and academic research.
-`skills/pattern-catalog.md#pattern-1-scoped-connection-guard` into a clickable Markdown link...
+`skills/pattern-catalog.md#pattern-1-scoped-connection-guard` 
