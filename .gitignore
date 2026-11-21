@@ -1,0 +1,13 @@
+build/
+.cache/
+*.o
+*.obj
+*.exe
+*.out
+*.dylib
+*.so
+*.a
+compile_commands.json
+.vscode/
+.idea/
+*.log
