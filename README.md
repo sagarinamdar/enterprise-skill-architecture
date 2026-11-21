@@ -204,5 +204,11 @@ Across 5 repeated test iterations comparing standard prompting against the 3-Fil
 
 ---
 
-## 11. License
+## 11. Related Work & Ecosystem
+
+- [**antigravity-voice-sentinel**](https://github.com/sagarinamdar/antigravity-voice-sentinel): Human-in-the-Loop latency elimination, speech-to-text prompting, and deterministic stall detection state machines for Google Antigravity.
+
+---
+
+## 12. License
 MIT License. Free to use, adapt, and build upon for enterprise and academic research.
