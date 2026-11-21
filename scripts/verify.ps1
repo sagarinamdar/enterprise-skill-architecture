@@ -13,7 +13,7 @@ cmake -B $buildDir -S $rootDir -DCMAKE_BUILD_TYPE=Debug -DENABLE_ASAN=ON
 Write-Host "=== [2/3] Building Test Targets ===" -ForegroundColor Cyan
 cmake --build $buildDir --config Debug
 
-Write-Host "=== [3/3] Executing CTest with Sanitizers Active ===" -ForegroundColor Cyan
+Write-Host "=== [3/3] Executing CTest on Modernized RAII Suite ===" -ForegroundColor Cyan
 $env:ASAN_OPTIONS = "detect_leaks=1:halt_on_error=1:abort_on_error=1"
 Push-Location $buildDir
 try {
