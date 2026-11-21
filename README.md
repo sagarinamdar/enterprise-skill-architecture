@@ -34,24 +34,28 @@ This architecture was forged through the real-world experiences of a systems arc
 
 ---
 
-## 3. Core Architecture: The 3-File Separation
+flowchart TB
+    Root["<b>3-File Skill Separation</b>"]
 
-Rather than loading bloated, undifferentiated prompts into agent memory, the framework decouples constraints into three distinct lifecycle roles:
+    subgraph P1["1. Policy (skills/instructions.md)"]
+        direction TB
+        P1A["• Invariant standards<br/>• C++17 RAII mandatory<br/>• Sanitizer clean gates<br/>• Zero raw owning pointers"]
+    end
 
-```
-┌────────────────────────────────────────────────────────────────────────┐
-│                        3-File Skill Separation                         │
-├──────────────────────────┬─────────────────────────┬───────────────────┤
-│ 1. Policy                │ 2. Execution Playbook   │ 3. Failure Memory │
-│ (skills/instructions.md) │ (skills/skill.md)       │ (skills/catalog)  │
-├──────────────────────────┼─────────────────────────┼───────────────────┤
-│ • Invariant standards    │ • Phased workflow       │ • Known anti-     │
-│ • C++17 RAII mandatory   │ • Progressive tool call │   pattern keys    │
-│ • Sanitizer clean gates  │ • Invokes local scripts │ • Scoped RAII     │
-│ • Zero raw owning ptrs   │ • Zero LLM build flags  │   resolution maps │
-└──────────────────────────┴─────────────────────────┴───────────────────┘
-```
+    subgraph P2["2. Execution Playbook (skills/skill.md)"]
+        direction TB
+        P2A["• Phased workflow<br/>• Progressive tool calls<br/>• Invokes local scripts<br/>• Zero LLM build flags"]
+    end
 
+    subgraph P3["3. Failure Memory (skills/pattern-catalog.md)"]
+        direction TB
+        P3A["• Known anti-pattern keys<br/>• Scoped RAII resolution maps<br/>• Persistent repo memory"]
+    end
+
+    Root --> P1
+    Root --> P2
+    Root --> P3\
+  ```
 1. **Policy (`skills/instructions.md`)**  
    *What is non-negotiable.* Immutable rules of engagement: C++17 standard conformance, strict RAII lifecycle management, zero heap-use-after-free, and automated zero-tolerance ASAN exits.
 2. **Execution Playbook (`skills/skill.md`)**  
@@ -61,27 +65,14 @@ Rather than loading bloated, undifferentiated prompts into agent memory, the fra
 
 ---
 
-## 4. The Deterministic Script Hook Principle
+flowchart TB
+    A["<b>Agent Skill Workflow</b><br/>(skills/skill.md)"] -->|"Triggers deterministic hook"| B["<b>./scripts/verify.sh</b><br/>(Zero LLM-guessed flags)"]
 
-A frequent failure mode in autonomous coding agents is **command hallucination**: LLMs attempting to guess compiler paths, flags (`-fsanitize=address`, `-fno-omit-frame-pointer`), or CI targets.
+    B --> C["<b>1. CMake Debug Build</b><br/>(-fsanitize=address,undefined)"]
+    B --> D["<b>2. CTest under ASAN</b><br/>(Halts on leak / UAF)"]
 
-Following [Google Cloud's Official Agent Skills Specification](https://cloud.google.com/discover/ai-agent-skills) and Anthropic's guidance on agent tool design, this framework pairs natural-language skills directly with executable bash/powershell scripts:
-
-```
-Agent Skill Workflow
-         │
-         ▼
-[skills/skill.md] ──────> Executes: ./scripts/verify.sh
-                                  │
-         ┌────────────────────────┴────────────────────────┐
-         ▼                                                 ▼
-1. CMake Debug Build                            2. CTest under ASAN
-   (-fsanitize=address,undefined)                  (Halts on leak/UAF)
-         │                                                 │
-         └────────────────────────┬────────────────────────┘
-                                  ▼
-                     Machine-Checked Verdict
-                     (Zero opinion, 100% truth)
+    C --> E["<b>Machine-Checked Verdict</b><br/>(Exit Code: 0 opinion, 100% truth)"]
+    D --> E
 ```
 
 The LLM never generates or executes raw compilation strings—it triggers `./scripts/verify.sh` and consumes structured, deterministic compiler/sanitizer exit codes.
