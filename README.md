@@ -9,57 +9,27 @@
 
 ---
 
-## 1. Executive Summary: The "Context Poisoning" Dilemma
+## 1. Executive Summary: The Context Poisoning Dilemma
 
-Enterprise adoption of AI coding agents faces a stark economic reality: **without rigorous architecture, enterprise AI produces negative ROI**. 
+AI coding agents promise speed, but brownfield enterprise codebases present a harsh reality: **without deterministic guardrails, AI generates negative ROI**. 
 
-When an unguided coding assistant is deployed on a multi-decade brownfield codebase, superficial typing speed is instantly wiped out by the **Senior Architect Review Tax**—senior developers spending days debugging subtle heap corruption, memory leaks, and broken CI pipelines introduced by models mimicking historical C++98 anti-patterns. 
+Unguided models mimic what they see. When dropped into legacy C++ repositories, in-context learning causes agents to copy historical C++98 anti-patterns (raw owning pointers, manual memory management, ad-hoc singletons). The typing speed gained by junior developers is wiped out by senior engineers spending days debugging subtle heap corruption and sanitizer aborts in production.
 
-Because LLM learning is locked in place and context windows are physically constrained, naive prompting cannot bridge this gap. **In-context learning weaponizes legacy anti-patterns against the codebase**:
-
-```
-Legacy Repository Context (Raw pointers, manual delete, ad-hoc singletons)
-                 │
-                 ▼
-┌─────────────────────────────────┐
-│     LLM In-Context Learning     │  <── Standard RAG / Context Window
-└─────────────────────────────────┘
-                 │
-                 ▼
-New AI-Generated Code (Context-Poisoned)
- • Copies raw pointer ownership idioms
- • Bypasses Modern C++ RAII / Smart Pointers
- • Generates subtle Use-After-Free & Memory Leaks
- • Breaks CI silently without sanitizer gates
-```
-
-According to large-scale industry empirical research:
-- **81% Rise in Code Duplication**: [GitClear's 2026 AI Code Quality Research](https://www.gitclear.com/the_ai_code_quality_maintainability_gap) analyzing over 600M+ code commits found code duplication rose by 81% (40.3 to 73.0 per 1M changed lines), while refactoring plummeted from 21% to 3.8% (~5x more copy/paste than refactoring). Legacy code updates (>12 months old) collapsed by 74%.
-- **Context Rot & Poisoning**: [Thoughtworks (Nov 2026)](https://www.thoughtworks.com/insights/blog/generative-ai/what-is-context-rot) established the boundary between *Context Rot* (degradation of model recall over expanding conversation histories) and *Context Poisoning* (stale or toxic repository conventions biasing the model into generating non-compliant code).
-- **Persistent Outdated Patterns**: [arXiv:2604.09515 (2026)](https://arxiv.org/html/2604.09515v1) demonstrated across 11 frontier models that outdated repository conventions persist in generation outputs even when updated specification prompts are provided.
-
-This repository provides an open-source, deterministic framework that **immunizes AI coding agents against context poisoning** using a **3-File Skill Architecture**, a **Dual-Pass Context Audit**, and **Deterministic Script Execution**.
+This repository provides an open-source, deterministic framework to **immunize coding agents against context poisoning** using three practical mechanisms: a **3-File Skill Architecture**, a **Dual-Pass Context Audit**, and **Deterministic Script Execution**.
 
 ---
 
 ## 2. Practitioner Origin: Battle Scars from Enterprise AI Adoption
 
-This architecture was not conceived in an academic vacuum; it was forged through the direct, day-to-day realities of a seasoned systems architect working inside complex enterprise environments during the initial wave of mainstream AI adoption.
+This architecture was forged through the real-world experiences of a systems architect on the front lines of early enterprise AI rollouts. When teams first adopted coding assistants on mature codebases, reality quickly clashed with the hype:
 
-When enterprise engineering teams first integrated AI coding assistants, the promised productivity gains frequently collided with brownfield reality:
-
-* **The "Million-Dollar Asset" Fallacy**: Enterprise leadership historically views multi-decade codebases as sacred multi-million dollar assets. That valuation was earned: every module represented immense human coordination—architecture review boards, cross-team negotiations, manual QA cycles, and years of expensive developer hours. However, in the AI era, this reverence creates a dangerous assumption: *that feeding an entire legacy codebase into an AI will transfer that multi-million dollar wisdom to new code.* In reality, the AI cannot differentiate between core business invariants and 15-year-old C++98 memory workarounds; it blindly industrializes the very technical compromises that made legacy software expensive to maintain.
-* **The Frozen Model vs. Amnesiac Enterprise Mismatch**: Foundation LLMs arrive with **static, frozen parametric memory**—their learning is locked in place. The model has zero institutional memory, zero context of the organization, and zero awareness of its architectural invariants. Fine-tuning on legacy code is a dangerous dead end that freezes obsolete C++98 anti-patterns into model weights, while raw context dumping causes Context Poisoning. The Skill Architecture acts as an **externalized non-parametric memory bank**, giving a frozen foundation model immediate, governed domain competence.
-* **The Enterprise IP Citadel (Zero Data Handover)**: Because organizations view their code as an irreplaceable multi-million dollar asset, security and legal leadership will **never willingly export proprietary repositories or operational data to external AI services**. Solutions requiring massive cloud RAG over private codebases fail at the CISO boundary. The Skill architecture solves this by keeping all compilation, static analysis, and sanitizers **100% local within the enterprise security perimeter**, using deterministic scripts so zero proprietary code leaves the firewall.
-* **The Senior Architect Review Tax**: While developers generated code in seconds, senior engineers spent hours untangling intermittent heap corruption and subtle use-after-free bugs caused by AI assistants mimicking ancient raw pointer idioms found elsewhere in the repository.
-* **Folklore Mistaken for Architecture**: When an LLM crawls an enterprise codebase, it cannot distinguish between a fragile workaround committed during a legacy production fire and a deliberate architectural standard. It treats historical debt as authoritative precedent.
-* **The Developer Prompting Exhaustion Ceiling**: A developer has cognitive and practical limits. No engineer can—or should—write a 2,000-word prompt explaining 20 years of institutional history, obscure memory pitfalls, and compiler flags every time they need a 20-line bug fix. When developers inevitably give concise, task-focused prompts, an unguided model defaults to surface pattern matching, generating code that looks like the existing legacy codebase—or worse.
-* **The "Groundhog Day" of Unpersisted Corrections**: When a senior engineer spends 45 minutes walking an AI assistant through a complex heap-use-after-free fix, that hard-won learning evaporates the moment the conversation window closes. The next morning—or in a teammate's IDE—the model makes the exact same mistake again because its learning is locked in place. The 3-File Skill architecture permanently breaks this treadmill: fixes are codified once into `skills/pattern-catalog.md` as shared, repository-level institutional memory.
-* **The Finite Context Window & Attention Dilution**: Enterprise repositories span millions of lines across thousands of files. Even with modern long-context windows, shoveling large swaths of legacy code into context triggers **Attention Dilution and "Lost-in-the-Middle" degradation**—critical memory safety constraints get drowned in boilerplate, inference latency triples, and costs skyrocket. More dangerously, dumping large volumes of legacy code statistically overwhelms the model with obsolete patterns. The Skill framework bypasses this limit through **Progressive Disclosure**: keeping the agent's active context window lean and razor-sharp (~500 tokens of non-negotiable policy), loading remediation patterns only on demand, and offloading build execution entirely to local scripts.
-* **The "Verification Over Generation" Reality**: Writing syntax in enterprise C++ was never the true engineering bottleneck—**proving that code is free of memory corruption, thread safety hazards, and lifecycle leaks is where 90% of real cost resides**.
-* **Command Hallucination in Legacy CI**: Asking an LLM to improvise compiler flags, sanitizer arguments, or test targets inevitably produces hallucinated CLI strings that fail silently or bypass safety gates.
-
-This framework is the direct distillation of those enterprise battle scars: replacing unguided prompt engineering with **deterministic, compiler-enforced architectural guardrails**.
+* **The "Million-Dollar Asset" Fallacy**: Teams revere legacy codebases because they cost millions in human coordination. But feeding raw legacy code to an AI doesn't transfer that wisdom—the model cannot distinguish business rules from 15-year-old memory hacks. It simply industrializes technical debt.
+* **The Frozen Model vs. Amnesiac Enterprise**: Foundation models arrive with frozen weights and zero awareness of internal architecture. Fine-tuning on legacy code is an expensive trap that bakes bad C++98 into parameters forever. Skills serve as an externalized, dynamic memory bank that enforces modern standards at runtime without touching model weights.
+* **The Enterprise IP Citadel (Zero Data Handover)**: CISOs and legal teams will not upload proprietary codebases to external cloud AI. The Skill architecture runs all builds, static analysis, and AddressSanitizer checks **100% locally within your security perimeter**, using deterministic scripts so zero proprietary source leaves the firewall.
+* **The Developer Prompting Ceiling**: No developer will write a 2,000-word prompt detailing 20 years of architecture rules for a 20-line bug fix. When developers give realistic, concise prompts, unguided models default to naive pattern matching. The Skill architecture attaches persistent policies automatically.
+* **The "Groundhog Day" of Unpersisted Corrections**: When an engineer spends an hour steering an AI through a complex memory fix, that learning is lost the second the chat closes. Tomorrow, the model makes the exact same mistake. Codifying fixes into `skills/pattern-catalog.md` turns individual fixes into permanent repository memory.
+* **Finite Context & Attention Dilution**: Dumping massive repos into 1M-token windows causes attention rot; key safety constraints get lost in boilerplate. Progressive disclosure keeps working context lean (~500 tokens), querying catalogs on demand and offloading build logs entirely to local scripts.
+* **Verification Over Generation**: Writing syntax was never the enterprise bottleneck—proving that code is free of memory corruption, concurrency hazards, and leaks is where 90% of engineering effort lies. Compilers and sanitizers must deliver the verdict, not the LLM.
 
 ---
 
@@ -156,7 +126,7 @@ To ensure absolute technical credibility, every claim made by this project is an
 
 ## 8. Quickstart: 3-Minute Reproducible Verification
 
-This repository includes a synthetic C++17 legacy fixture (`legacy_fixture/`) containing a classic legacy anti-pattern: an event-driven session manager with raw pointer listener registries, manual teardowns, and a subtle heap-use-after-free triggered under asynchronous or reordered teardowns.
+Includes a synthetic C++17 legacy fixture (`legacy_fixture/`) with raw observer pointers and a heap-use-after-free triggered during one-shot teardowns.
 
 ### Prerequisites
 - CMake 3.16+
