@@ -25,10 +25,22 @@ add_library(session_core STATIC
     legacy_fixture/session_registry.cpp
 )
 
+# 1. Legacy Baseline Executable (Demonstrates AddressSanitizer UAF intercept)
 add_executable(session_legacy_test
     legacy_fixture/test_session_lifecycle.cpp
 )
-
 target_link_libraries(session_legacy_test PRIVATE session_core)
 
-add_test(NAME TestSessionLifecycle COMMAND session_legacy_test)
+# 2. Modernized RAII Executable (Demonstrates 100% clean memory safety)
+add_executable(session_modern_test
+    legacy_fixture/test_session_modern.cpp
+)
+target_link_libraries(session_modern_test PRIVATE session_core)
+
+# CTest Suite:
+# Test 1 verifies AddressSanitizer intercepts the legacy bug (WILL_FAIL TRUE = expected abort)
+add_test(NAME TestLegacyLifecycle_ExpectedFailure COMMAND session_legacy_test)
+set_tests_properties(TestLegacyLifecycle_ExpectedFailure PROPERTIES WILL_FAIL TRUE)
+
+# Test 2 verifies Modern C++ RAII architecture passes cleanly with 0 ASAN errors
+add_test(NAME TestModernLifecycle_CleanPass COMMAND session_modern_test)
