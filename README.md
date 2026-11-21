@@ -163,8 +163,7 @@ freed by thread T0 here:
 ```
 
 ### Applying the 3-File Skill Fix
-When an agent is guided by `skills/skill.md`, it references `skills/pattern-catalog.md#pattern-1-scoped-connection-guard` to replace raw listener pointer maps with `ScopedConnection` RAII tokens.
-
+When an agent is guided by `skills/skill.md`, it references [`skills/pattern-catalog.md`](skills/pattern-catalog.md#pattern-1-scoped-connection-guard) to replace raw listener pointer maps with `ScopedConnection` RAII tokens.
 Rerunning `./scripts/verify.sh` yields:
 ```
 [100%] Built target session_legacy_test
@@ -212,3 +211,4 @@ Across 5 repeated test iterations comparing standard prompting against the 3-Fil
 
 ## 12. License
 MIT License. Free to use, adapt, and build upon for enterprise and academic research.
+`skills/pattern-catalog.md#pattern-1-scoped-connection-guard` into a clickable Markdown link...
